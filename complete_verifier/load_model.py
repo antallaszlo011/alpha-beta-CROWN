@@ -148,7 +148,7 @@ def load_model_onnx(path, quirks=None, x=None):
         onnx_shape = onnx_shape[1:]
 
     pytorch_model = onnx2pytorch.ConvertModel(
-        onnx_model, experimental=True, quirks=quirks)
+        onnx_model, experimental=True, quirks=quirks, debug=False)
     pytorch_model.eval()
     pytorch_model.to(dtype=torch.get_default_dtype())
 
@@ -173,6 +173,7 @@ def load_model_onnx(path, quirks=None, x=None):
             output_pytorch = output_pytorch.clip(min=0)
         conversion_check_result = np.allclose(
             output_pytorch, output_onnx, 1e-4, 1e-5)
+        print('>>> Model conversion was successful.')
     except:  # pylint: disable=broad-except
         warnings.warn('Not able to check model\'s conversion correctness')
         print('\n*************Error traceback*************')
