@@ -264,10 +264,15 @@ def attack(model_ori, x, vnnlib, verified_status, verified_success,
             except Exception as e:
                 print(str(e))
                 print('save adv example failed')
+
         if arguments.Config["general"]["show_adv_example"]:
             print('Adv example:')
             print(attack_images[0, 0])
             print("Attack images shape:", attack_images.shape)
+
+            decoded_attack_img = attack_images[0, 0].cpu().detach().numpy().transpose(1, 2, 0).astype(np.uint8)
+            cv2.imshow('adv attack', decoded_attack_img)
+            cv2.waitKey()
 
             # attack_image = attack_images[0][0][0].numpy()
             # print(attack_image)
