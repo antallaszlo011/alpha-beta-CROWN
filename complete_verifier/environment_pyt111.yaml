@@ -122,7 +122,9 @@ dependencies:
   - zstd=1.5.5=hc292b87_0
   - pip:
       - flatbuffers==23.5.26
+      - matplotlib==3.8.3
       - git+https://github.com/antallaszlo011/onnx2pytorch@fbabbe7da0fb184f71ac54a615c5b68ec11f526b
       - onnxoptimizer==0.3.13
       - onnxruntime==1.15.1
       - onnxsim==0.4.33
+      - opencv-python==4.9.0.80
