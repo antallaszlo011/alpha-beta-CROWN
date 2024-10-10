@@ -256,14 +256,12 @@ def attack(model_ori, x, vnnlib, verified_status, verified_success,
     if attack_ret:
         # Attack success.
         if arguments.Config["general"]["save_adv_example"]:
-            try:
-                attack_output = model_ori(attack_images.view(-1, *x.shape[1:]))
-                save_cex(attack_images, attack_output, x, vnnlib,
-                        arguments.Config["attack"]["cex_path"],
-                        data_max_repeat, data_min_repeat)
-            except Exception as e:
-                print(str(e))
-                print('save adv example failed')
+            decoded_attack_img = attack_images[0, 0].cpu().detach().numpy().transpose(1, 2, 0).astype(np.uint8) 
+            vnn_name = os.path.basename(arguments.Config['specification']['vnnlib_path'])
+            pre, _ = os.path.splitext(vnn_name)
+            adv_attack_path = os.path.join('./adv_examples/', pre + '.png')
+            print('Saving adversarial attack to:', adv_attack_path, '...')
+            cv2.imwrite(adv_attack_path, decoded_attack_img)
 
         if arguments.Config["general"]["show_adv_example"]:
             print('Adv example:')
@@ -273,76 +271,6 @@ def attack(model_ori, x, vnnlib, verified_status, verified_success,
             decoded_attack_img = attack_images[0, 0].cpu().detach().numpy().transpose(1, 2, 0).astype(np.uint8)
             cv2.imshow('adv attack', decoded_attack_img)
             cv2.waitKey()
-
-            # attack_image = attack_images[0][0][0].numpy()
-            # print(attack_image)
-            # print(attack_image.shape)
-
-            # vnn_name = os.path.basename(arguments.Config['specification']['vnnlib_path'])
-            # pre, _ = os.path.splitext(vnn_name)
-            # adv_attack_path = os.path.join('./adv_examples/', pre + '.npy')
-            # print(adv_attack_path)
-            # np.save(adv_attack_path, attack_image)
-
-            # plt.imshow(attack_image, cmap='gray', vmin=0.0, vmax=1.0)
-            # plt.show()
-            # exit(0)
-
-            # !! All images in the attack_images array are the same !!
-            # for idx, attack_image in enumerate(attack_images[0]):
-            #     print('Sum of differences in image:', torch.max((attack_images[0, 0] - attack_image)))
-
-            #     attack_image = attack_image.cpu().detach().numpy().transpose(1, 2, 0)
-            #     # attack_image = attack_image.cpu().detach().numpy().reshape(416, 416, 3)
-            #     # attack_image = attack_image.cpu().detach().numpy().view((640, 640, 3))
-            #     # attack_image = cv2.cvtColor(attack_image, cv2.COLOR_RGB2BGR)
-            #     print('idx', idx, 'shape:', attack_image.shape)
-            #     cv2.imshow('image_' + str(idx), attack_image.astype(np.uint8))
-            # cv2.waitKey()
-
-            # # !!! NEEDED FOR YOLOX VERIFICATION !!!
-            # decoded_attack_img = attack_images[0, 0].cpu().detach().numpy().transpose(1, 2, 0).astype(np.uint8) 
-            # # np.save('YOLOX_attack.npy', decoded_attack_img)
-            # # cv2.imshow('adv attack', decoded_attack_img)
-            # # cv2.waitKey()
-
-            # vnn_name = os.path.basename(arguments.Config['specification']['vnnlib_path'])
-            # pre, _ = os.path.splitext(vnn_name)
-            # adv_attack_path = os.path.join('./adv_examples/', pre + '.png')
-            # print('Saving adversarial attack to:', adv_attack_path, '...')
-            # cv2.imwrite(adv_attack_path, decoded_attack_img)
-            # # !!! NEEDED FOR YOLOX VERIFICATION !!!
-
-            # print("Attack image image shape:", attack_images[0, 0].shape)
-
-            # # test_img = np.asarray(np.floor(attack_images[0, 0] * 256)).transpose(1, 2, 0).astype(np.uint8)
-            # # print(test_img)
-            # # print('Test image shape:', test_img.shape)
-
-            # # print("Max:", np.max(test_img))
-            # # print("Min:", np.min(test_img))
-
-            # # cv2.imshow('Adversarial attack', test_img)
-            # # cv2.waitKey()
-
-            # attack_image = attack_images[0, 0].detach().cpu().numpy()
-            # print(attack_image)
-            # print(type(attack_image))
-            # print(attack_image.shape)
-
-            # print('Min original:', np.min(attack_image))
-            # print('Max original:', np.max(attack_image))
-
-            # reshaped_img = attack_image.reshape(640, 640, 3)
-            # plt.imshow(reshaped_img)
-
-            # # Display the image
-            # plt.axis('off')
-            # plt.show()
-
-            # im = Image.fromarray((reshaped_img * 255).astype(np.uint8))
-            # im.save('image_' + str(random.randint(0, 1000)) + '.jpg')
-
 
         verified_status = "unsafe-pgd"
         verified_success = True
